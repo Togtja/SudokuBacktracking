@@ -1,4 +1,4 @@
-# SudokuBacktracking
+# Sudoku Solvers
 A program that solves Sudoku's by backtracking. it's good-ish commented.
 It may be a bit inefficent, but it was just a small few hours project.
 Should in theory be able to solve any solvebable sudokus
