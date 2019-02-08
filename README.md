@@ -12,5 +12,5 @@ You have to write the sudoku you want to solve as an array inside main, and call
 
 
 # Things I might do
-Input the sodoku via the CMD,
+Input the sudoku via the CMD,
 or just ask you to use some of the already created once.
