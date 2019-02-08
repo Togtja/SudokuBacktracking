@@ -10,6 +10,7 @@ Alot more effienct, but  can't solve everything
 # How to use
 You have to write the sudoku you want to solve as an array inside main, and call sudokuSolve(yourArray) or solveSudoku(yourArray) depending on which solver you use. (I will get to it, and make it so the functions have the same name).
 
-#Things I might do
+
+# Things I might do
 Input the sodoku via the CMD,
 or just ask you to use some of the already created once.
