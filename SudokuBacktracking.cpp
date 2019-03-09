@@ -117,6 +117,8 @@ int main() {
 	std::cout << "Finished...\n Input any key to continue:\n";
 	char t;
 	std::cin >> t;
+	
+	return 0;
 }
 //Returns whether the sudoku is legal/valid
 bool sudokoIsLegal(int s[][MAX]) {
