@@ -3,7 +3,7 @@
 
 //A sudoku solver that solves sudokus as humans aka using strategies
 
-const int MAX = 9;// I know I know a "global variable" they should be used in a 
+const int MAX = 9;// I know I know a "global variable" they should not be used in a 
 				  //multi-person project and generally avoided
 				  //But this is MY project, and this made my life easier
 std::random_device rd;  //Will be used to obtain a seed for the random number engine
@@ -558,7 +558,8 @@ void boxReduction(bool a[][MAX][MAX], int s[][MAX]) {
 	}
 }
 
-/*void createSudoku(int newS[][MAX]) {
+/*
+void createSudoku(int newS[][MAX]) {
 
 	std::uniform_int_distribution<> num(1, 9); //Random number from 1 to 9
 	std::uniform_int_distribution<> willPlace(1, 5); //
@@ -583,7 +584,8 @@ void boxReduction(bool a[][MAX][MAX], int s[][MAX]) {
 
 	} while (!oneSolution(newS));
 
-}*/
+}
+*/
 
 bool oneSolution(int s[][MAX]) {
 	int temp[MAX][MAX];
