@@ -2,14 +2,14 @@
 /*
 	Tomas Himberg Berger
 	Solves sudokus with us of backtracking
-	also once with more than 1 solution
+	also sudokus with more than 1 solution
 	it's slower than "human methods" but it can handle one with more than 1 solution
-	also sudoku impossible with "human methods"
+	also sudoku's impossible with "human methods"
 
 	It can probably be made quicker, but I did this in a few hours, so won't bother
 */
 
-const int MAX = 9;// I know I know a "global variable" they should be used in a 
+const int MAX = 9;// I know I know a "global variable" they should not be used in a 
 				  //multi-person project and generally avoided
 				  //But this is MY project, and this made my life easier 
 
