@@ -1,96 +1,13 @@
-#include<iostream>
+#include "SudokuHuman.h"
+#include "HelpFunc.h"
+
 #include <random> //To be used to make sudokus
-
-//A sudoku solver that solves sudokus as humans aka using strategies
-
-const int MAX = 9;// I know I know a "global variable" they should not be used in a 
-				  //multi-person project and generally avoided
-				  //But this is MY project, and this made my life easier
 std::random_device rd;  //Will be used to obtain a seed for the random number engine
 std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
-
-//Functions
-void createMap(int s[][MAX]);
-bool solveSudoku(int s[][MAX]);
-void copyMAXArr(int f[][MAX], int t[][MAX]);
-bool isSameArr(int f[][MAX], int t[][MAX]);
-bool isFinished(int s[][MAX]);
-void pointingPairSimple(bool a[][MAX][MAX], int s[][MAX]);
-void nakedPair(bool a[][MAX][MAX], int s[][MAX]);
-void boxReduction(bool a[][MAX][MAX], int s[][MAX]);
-void copyCanditates(bool f[][MAX][MAX], bool t[][MAX][MAX]);
-bool isSameCan(bool f[][MAX][MAX], bool t[][MAX][MAX]);
-bool isLegalSudoku(int s[][MAX]);
-void createSudoku(int newS[][MAX]);
-bool oneSolution(int s[][MAX]);
-void setToZero(int s[][MAX]);
 //TODO Find out why  pointingPairSimple fucks with my code
 
-int	main() {
-	int solveThis[MAX][MAX]{//Just normal strategy to solve so it becomes solved
-	{ 0,0,5,0,0,7,0,6,0 },
-	{ 3,2,0,6,5,0,0,4,0 },
-	{ 0,0,0,0,0,2,5,0,9 },
-	{ 0,0,6,0,0,0,0,2,0 },
-	{ 0,0,3,5,2,6,7,0,0 },
-	{ 0,4,0,0,0,0,6,0,0 },
-	{ 9,0,1,2,0,0,0,0,0 },
-	{ 0,3,0,0,6,8,0,7,5 },
-	{ 0,5,0,4,0,0,3,0,0 }
-	};
-	int solveThis2[MAX][MAX]{ //Needing pointing pair to be solved
-	{ 0,0,0,0,6,7,4,9,0 },
-	{ 0,9,0,0,0,0,2,0,6 },
-	{ 0,0,0,5,0,0,0,8,0 },
-	{ 0,0,5,0,0,8,0,0,0 },
-	{ 7,0,0,0,9,0,0,0,8 },
-	{ 0,0,0,4,0,0,3,0,0 },
-	{ 0,6,0,0,0,4,0,0,0 },
-	{ 5,0,4,0,0,0,0,6,0 },
-	{ 0,8,3,1,5,0,0,0,0 }
-	};
-	int solveThis3[MAX][MAX]{ //Unsolvable Sudoku 
-	{ 1,7,3,8,0,0,9,5,0 },	
-	{ 8,0,0,7,5,0,0,0,0 },	
-	{ 0,0,0,0,0,0,0,4,0 },	
-	{ 0,0,0,5,3,0,0,0,0 },
-	{ 2,0,0,0,9,0,3,0,0 },
-	{ 5,0,6,0,8,0,0,0,0 },
-	{ 0,0,7,0,0,4,0,0,5 },
-	{ 0,6,0,0,2,0,0,0,9 },
-	{ 3,5,0,0,0,0,4,6,0 }
-	};
-	int solveThisNP[MAX][MAX]{ //Alot of naked pairs
-	{ 0,8,0,0,9,0,0,3,0 },
-	{ 0,3,0,0,0,0,0,6,9 },
-	{ 9,0,2,0,6,3,1,5,8 },
-	{ 0,2,0,8,0,4,5,9,0 },
-	{ 8,5,1,9,0,7,0,4,6 },
-	{ 3,9,4,6,0,5,8,7,0 },
-	{ 5,6,3,0,4,0,9,8,7 },
-	{ 2,0,0,0,0,0,0,1,5 },
-	{ 0,1,0,0,5,0,0,2,0 },
-	};
-	solveSudoku(solveThis2);
-	if (isLegalSudoku(solveThis2)) {
-		createMap(solveThis2);
-	}
-	else {
-		std::cout << "Unable to solve the sudoku\n";
-	}
-	std::cout << "GENERATED SUDOKU\n";
-	int createS[MAX][MAX] = {false};
-	createSudoku(createS);
-	createMap(createS);
-	solveSudoku(createS);
-	createMap(createS);
-	char c;
-	std::cin >> c;
-
-	return 0;
-}
 //0-2 and 0-2, 3-5 and 3-5, 6-8 and 6-8
-bool solveSudoku(int s[][MAX]) {
+bool solveSudokuHuman(int s[][MAX]) {
 	int copyarr[MAX][MAX];
 	int pp[MAX][MAX];
 
@@ -194,82 +111,16 @@ bool solveSudoku(int s[][MAX]) {
 			progress = false;
 		}
 		runs++;
-	} while (!isFinished(s) && progress);
+	} while (!sudokuIsFinished(s) && progress);
 
-	if (!progress || !isFinished(s) || !isLegalSudoku(s)) {
+	if (!progress || !sudokuIsFinished(s) || !sudokoIsLegal(s)) {
 		return false;
 	}
 	return true;
 }
-void createMap(int s[][MAX]) {
-	char topleft = 201, horizont = 196, vertical = 179, lineright = 195, lineleft = 180, hordown = 194, topright = 187, corners = 197,
-		botleft = 200, botright = 188, horup = 193, ddpoleleft = 185, ddvertical = 186, ddhorizont = 205, sdcorner = 216, sdcorner2 = 215,
-		ddcorner = 206, ddpoleright = 204, ddhorup = 202, ddhordown = 203, sdhordown = 209, sdhorup = 207, sdpoleright = 199, sdpoleleft = 182; // A good amount of ACII to make it look nice
 
-																																				//Down from here we just form nice looking boxes around the numbers, 
-	std::cout << topleft;
-	//Top of the box
-	for (int i = 0; i < 8; i++) {
-		std::cout << ddhorizont << ddhorizont << ddhorizont << ((i % 3 == 2) ? ddhordown : sdhordown);
-	}
-	std::cout << ddhorizont << ddhorizont << ddhorizont << topright << std::endl;
-	//Creates the 8 coloums from there
-	for (int j = 0; j < 8; j++) {
-		//The numbers
-		for (int i = 0; i < 9; i++) {
-			std::cout << ((i % 3 == 0) ? ddvertical : vertical) << " " << s[j][i] << " ";
-		}
-		std::cout << ddvertical << std::endl;
-		//The middle part between numbers
-		std::cout << ((j % 3 == 2) ? ddpoleright : sdpoleright);
-		for (int i = 0; i < 8; i++) {
-			if (j % 3 == 2) {
-				std::cout << ddhorizont << ddhorizont << ddhorizont << ((i % 3 == 2) ? ddcorner : sdcorner);
-			}
-			else {
-				std::cout << horizont << horizont << horizont << ((i % 3 == 2) ? sdcorner2 : corners);
-			}
-		}
-		if (j % 3 == 2) {
-			std::cout << ddhorizont << ddhorizont << ddhorizont << ddpoleleft << std::endl;
-		}
-		else {
-			std::cout << horizont << horizont << horizont << sdpoleleft << std::endl;
-		}
-
-	}
-	//Prints the last line of numbers
-	for (int i = 0; i < 9; i++) {
-		std::cout << ((i % 3 == 0) ? ddvertical : vertical) << " " << s[8][i] << " ";
-	}
-	std::cout << ddvertical << std::endl;
-	std::cout << botleft;
-	//Prints the bottom part
-	for (int i = 0; i < 8; i++) {
-		std::cout << ddhorizont << ddhorizont << ddhorizont << ((i % 3 == 2) ? ddhorup : sdhorup);
-	}
-	std::cout << ddhorizont << ddhorizont << ddhorizont << botright << std::endl;
-}
-
-void copyMAXArr(int f[][MAX], int t[][MAX]) {
-	for (int i = 0; i < MAX; i++) {
-		for (int j = 0; j < MAX; j++) {
-			t[i][j] = f[i][j];
-		}
-	}
-}
-bool isSameArr(int f[][MAX], int t[][MAX]) {
-	for (int i = 0; i < MAX; i++) {
-		for (int j = 0; j < MAX; j++) {
-			if (t[i][j] != f[i][j]) {
-				return false;
-			}
-		}
-	}
-	return true;
-}
-
-void copyCanditates(bool f[][MAX][MAX ], bool t[][MAX][MAX]) {
+//Candidates Operations
+static void copyCanditates(bool f[][MAX][MAX ], bool t[][MAX][MAX]) {
 	for (int i = 0; i < MAX; i++) {
 		for (int j = 0; j < MAX; j++) {
 			for (int q = 0; q < MAX; q++) {
@@ -278,7 +129,7 @@ void copyCanditates(bool f[][MAX][MAX ], bool t[][MAX][MAX]) {
 		}
 	}
 }
-bool isSameCan(bool f[][MAX][MAX], bool t[][MAX][MAX]) {
+static bool isSameCan(bool f[][MAX][MAX], bool t[][MAX][MAX]) {
 	for (int i = 0; i < MAX; i++) {
 		for (int j = 0; j < MAX; j++) {
 			for (int q = 0; q < MAX; q++) {
@@ -291,19 +142,7 @@ bool isSameCan(bool f[][MAX][MAX], bool t[][MAX][MAX]) {
 	}
 	return true;
 }
-
-bool isFinished(int s[][MAX]) {
-	for (int i = 0; i < MAX; i++) {
-		for (int j = 0; j < MAX; j++) {
-			if (s[i][j] == 0) {
-				return false;
-			}
-		}
-	}
-	return true;
-}
-
-int possibleCantidates(bool a[][MAX][MAX], int i, int j) {
+static int possibleCantidates(bool a[][MAX][MAX], int i, int j) {
 	int possible = 0;
 	for (int q = 0; q < MAX; q++) {
 		if (a[i][j][q]) {
@@ -313,39 +152,8 @@ int possibleCantidates(bool a[][MAX][MAX], int i, int j) {
 	return possible;
 }
 
-bool isLegalSudoku(int s[][MAX]) {
-	
-	for (int i = 0; i < MAX; i++) {
-		for (int j = 0; j < MAX; j++) {
-			//Checks that there is no more than accurence of a number in the i/(y) coloums
-			for (int k = 0; k < MAX; k++) {
-				if (j != k && s[i][j] != 0 && s[i][k] != 0) {
-					if (s[i][j] == s[i][k]) {
-						return false;
-					}
-				}
-			}
-			//Checks that there is no more than accurence of a number in the j/(x) rows
-			for (int k = 0; k < MAX; k++) {
-				if (i != k && s[i][j] != 0 && s[k][j] != 0) {
-					if (s[i][j] == s[k][j]) {
-						return false;
-					}
-				}
-			}
-			for (int k = i - (i % 3); k < i + 3 - (i % 3); k++) {
-				for (int l = j - (j % 3); l < j + 3 - (j % 3); l++) {
-					if (s[i][j] == s[k][l] && (i != k || j != l) && s[i][j] != 0 && s[k][l] != 0) {
-						return false;
-					}
-				}
-			}
-		}
-	}
-	return true;
-}
-
-void pointingPairSimple(bool a[][MAX][MAX], int s[][MAX]) {
+//Human Strategies
+static void pointingPairSimple(bool a[][MAX][MAX], int s[][MAX]) {
 	for (int i = 0; i < MAX; i++) {
 		for (int j = 0; j < MAX; j++) {
 			
@@ -404,7 +212,7 @@ void pointingPairSimple(bool a[][MAX][MAX], int s[][MAX]) {
 		}
 	}
 }
-void nakedPair(bool a[][MAX][MAX], int s[][MAX]) {
+static void nakedPair(bool a[][MAX][MAX], int s[][MAX]) {
 	for (int i = 0; i < MAX; i++) {
 		for (int j = 0; j < MAX; j++) {
 			if (s[i][j] != 0) { continue; }
@@ -490,7 +298,7 @@ void nakedPair(bool a[][MAX][MAX], int s[][MAX]) {
 
 	}
 }
-void boxReduction(bool a[][MAX][MAX], int s[][MAX]) {
+static void boxReduction(bool a[][MAX][MAX], int s[][MAX]) {
 	//Find two n in a row/colom inside a 3x3
 	//colom inside 3x3
 	bool colomBox = false;
@@ -587,18 +395,12 @@ void createSudoku(int newS[][MAX]) {
 }
 */
 
-bool oneSolution(int s[][MAX]) {
+static bool oneSolution(int s[][MAX]) {
 	int temp[MAX][MAX];
-	copyMAXArr(s, temp);
-	if (solveSudoku(temp) && isFinished(temp) ) {
+	sudokuCopy(s, temp);
+	if (solveSudokuHuman(temp) && sudokuIsFinished(temp) ) {
 		return true;
 	}
 	false;
 }
-void setToZero(int s[][MAX]) {
-	for (int i = 0; i < MAX; i++) {
-		for (int j = 0; j < MAX; j++) {
-			s[i][j] = 0;
-		}
-	}
-}
+

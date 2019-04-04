@@ -8,7 +8,7 @@ And one that solve using Human stategies. Not that well commented, will get to i
 Alot more effienct, but  can't solve everything
 
 # How to use
-You have to write the sudoku you want to solve as an array inside main, and call sudokuSolve(yourArray) or solveSudoku(yourArray) depending on which solver you use. (I will get to it, and make it so the functions have the same name).
+You have to write the sudoku you want to solve as an array inside main, and call solveSudoku(yourArray)
 
 
 # Things I might do
