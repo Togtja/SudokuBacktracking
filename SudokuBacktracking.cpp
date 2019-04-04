@@ -11,7 +11,6 @@
 	It can probably be made quicker, but I did this in a few hours, so won't bother
 */
 
-//Returns whether the sudoku is legal/valid
 
 //Recursivly goes into the sudoko for each valid move
 //If the move in the end makes an unvalid sudoku

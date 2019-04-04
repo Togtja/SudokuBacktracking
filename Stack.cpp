@@ -1,7 +1,10 @@
 #include "Stack.h"
+#include <mutex>
+std::mutex myMutex;
 ///Stack Class Functions
 //Push a sudoku into the stack
 bool Stack::push(int s[][MAX]) {
+	std::lock_guard<std::mutex> guard(myMutex);
 	if (top + 1 > capasity) {
 		return false;
 	}
@@ -17,6 +20,7 @@ bool Stack::push(int s[][MAX]) {
 //Pull/pop/take a sudoku from the stack
 //It's a FIFO list so it's the last one that got places in
 bool Stack::pop(int s[][MAX]) {
+	std::lock_guard<std::mutex> guard(myMutex);
 	if (top <= 0) {
 		return false;
 	}

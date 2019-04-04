@@ -2,6 +2,7 @@
 #include "SudokuBacktracking.h"
 #include "SudokuHuman.h"
 #include "HelpFunc.h"
+#include "SudokuBacktrackingMultiThread.h"
 
 int main() {
 	//The Sudokus
@@ -86,7 +87,7 @@ int main() {
 	}
 	else {
 		std::cout << "Working ...\n";
-		int sol = solveSudokuBacktrack(theSudoku);
+		int sol = solveSudokuBacktrackMT(theSudoku);
 		if (sol == 0) {
 			std::cout << "There are no found solutions\n";
 		}

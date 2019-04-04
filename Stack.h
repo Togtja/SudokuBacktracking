@@ -1,5 +1,5 @@
 #pragma once
-#include "Limits.h"
+#include "GlobalVar.h"
 class Stack {
 private:
 	int top; //Amout of items in stack

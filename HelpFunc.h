@@ -1,5 +1,5 @@
 #pragma once
-#include "Limits.h"
+#include "GlobalVar.h"
 void sudokuCreateMap(int s[][MAX]);
 void sudokuSetToZero(int s[][MAX]);
 bool sudokoIsLegal(int s[][MAX]);
