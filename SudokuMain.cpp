@@ -100,8 +100,5 @@ int main() {
 			sudokuCreateMap(theSudoku);
 		}
 	}
-	std::cout << "Press any key to continue (on your keyboard):  ";
-	char bs; std::cin >> bs;
 	return 0;
-
 }

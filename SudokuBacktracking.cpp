@@ -1,5 +1,6 @@
 #include "SudokuBacktracking.h"
 #include "HelpFunc.h"
+#include <iostream>
 #include <string> // for memcpy
 /*
 	Tomas Himberg Berger
@@ -37,24 +38,7 @@ void sudokuStackSolve(Stack &stk, Stack &sol) {
 						//The sudoku is comple and we print it out
 						//sol.push(s);
 						
-						if (sol.sizeOfStack() == 0) {
-							sol.push(s);
-						}
-						else {
-							//copy the data in the arr pointer in the Stack to *c
-							int* c = new int[MAX*MAX*sol.getCap()];
-							memcpy(c, sol.getArr(), MAX*MAX*sol.getCap() * sizeof(int));
-							Stack tempStack(sol.sizeOfStack(), sol.sizeOfStack(), c);
-							do {
-								int temp[MAX][MAX];
-								sudokuSetToZero(temp);
-								tempStack.pop(temp);
-								if (sudokuIsSame(temp, s)) {
-									return;
-								}
-							} while (!tempStack.isEmpty());
-							sol.push(s);
-						}
+						sol.push(s);
 
 						return;
 						
@@ -97,6 +81,11 @@ int solveSudokuBacktrack(int s[][MAX]) {
 		solutions.pop(solvedSudoku);
 		sudokuCopy(solvedSudoku, s);
 	}
+	std::cout << "There are " << solutions.sizeOfStack() << " Solutions\n";
+	solutions.pop(s);
+	sudokuCreateMap(s);
+	solutions.pop(s);
+	sudokuCreateMap(s);
 	return nrSolutions;
 }
 

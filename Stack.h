@@ -1,33 +1,32 @@
 #pragma once
 #include "GlobalVar.h"
+#include <set>
 class Stack {
 private:
-	int top; //Amout of items in stack
 	int capasity;//Max items a stack can have
-	int* arr; //And array of sudokus (functions a bit like a 3d array)
+	
+	std::mutex myMutex;
+	std::set<std::array<std::array<int, MAX>, MAX>> arr;
 
 public:
 	//Inizialize the values 
 	Stack(int size) {
-		arr = new int[MAX*MAX*size];
 		capasity = size;
-		top = 0;
 	}
 	//Set all values 
 	Stack(int size, int used, int* a) {
-		arr = a;
+		//arr = a;
 		capasity = size;
-		top = used;
 	}
 	//Destructor for the pointers used
-	~Stack() { delete[] arr; }
+	~Stack() { }
 	//Returns size of the stack
-	int sizeOfStack() { return top; }
-	bool push(int s[][MAX]);//Push to stack
-	bool pop(int emptyS[][MAX]);//pop from stack
+	int sizeOfStack() { return arr.size(); }
+	bool push(int s[MAX][MAX]);//Push to stack
+	bool pop(int emptyS[MAX][MAX]);//pop from stack
 	//Returns true if the stack is empty
-	bool isEmpty() { if (top <= 0) { return true; } return false; }
+	bool isEmpty() { return arr.empty(); }
 	//The gets is only needed when I make a copy of the stack
-	int* getArr() { return arr; }//Returns my array of sudokus
+	//int* getArr() { return arr; }//Returns my array of sudokus
 	int getCap() { return capasity; }//returns the capasity of the stack
 };

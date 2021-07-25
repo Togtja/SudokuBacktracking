@@ -1,8 +1,11 @@
 #include "SudokuBacktrackingMultiThread.h"
 #include "HelpFunc.h"
+#include <chrono>
+#include <ratio>
 #include <string> // for memcpy
 #include <thread> //for threads'
-#define NUM_THREADS MAX //for now only 9 threads supported
+#include <iostream>
+#define NUM_THREADS 12 //for now only 9 threads supported
 /*
 	Tomas Himberg Berger
 	Solves sudokus with us of backtracking
@@ -16,65 +19,37 @@
 //Recursivly goes into the sudoko for each valid move
 //If the move in the end makes an unvalid sudoku
 //It backtracks to last valid move
-static void sudokuStackSolve(Stack &stk, Stack &sol) {
+void sudokuStackSolveMT_rec(Stack &stk, Stack &sol, std::atomic_bool& completed, std::atomic_bool& all_complete) {
 	int s[MAX][MAX];
 	sudokuSetToZero(s);
-	if (!stk.pop(s)) {
-		///DEBUG MESSAGE
-		/*
-		std::cout << "The stack is empty!\n"
-			<< "This should in theory never happend, "
-			<< "so you have discovered a bug";
-		*/
-		return;
-	}
-	for (int i = 0; i < MAX; i++) {
-		for (int j = 0; j < MAX; j++) {
-			if (s[i][j] == 0) { //First non-placed place
-				for (int k = 1; k < MAX + 1; k++) {
-					s[i][j] = k;
-					bool isLegal = sudokoIsLegal(s);
-					if (isLegal && sudokuIsFinished(s)) {
-						//The sudoku is comple and we print it out
-						//sol.push(s);
+	while (!all_complete) {
+		while (!stk.pop(s)) {
+			completed = true;
+			if(all_complete){
+				return;
+			}
+			std::this_thread::sleep_for(std::chrono::milliseconds{100});
 
-						if (sol.sizeOfStack() == 0) {
+		}
+		completed = false;
+		for (int i = 0; i < MAX; i++) {
+			for (int j = 0; j < MAX; j++) {
+				if (s[i][j] == 0) { //First non-placed place
+					for (int k = 1; k < MAX + 1; k++) {
+						s[i][j] = k;
+						bool isLegal = sudokoIsLegal(s);
+						if (isLegal && sudokuIsFinished(s)) {
+							//The sudoku is comple and we print it out
+							std::cout << "We done solved it";
 							sol.push(s);
-						}
-						else {
-							//copy the data in the arr pointer in the Stack to *c
-							int* c = new int[MAX*MAX*sol.getCap()];
-							memcpy(c, sol.getArr(), MAX*MAX*sol.getCap() * sizeof(int));
-							Stack tempStack(sol.sizeOfStack(), sol.sizeOfStack(), c);
-							do {
-								int temp[MAX][MAX];
-								sudokuSetToZero(temp);
-								tempStack.pop(temp);
-								if (sudokuIsSame(temp, s)) {
-									return;
-								}
-							} while (!tempStack.isEmpty());
-							sol.push(s);
-						}
-
-						return;
-
-					}
-
-					if (isLegal) {
-						//The placement is legal, and we add it to the stack
-						if (stk.push(s)) {
-							//reurise with the first found correct one
-							sudokuStackSolve(stk, sol);
-						}
-						else {
-							///DEBUG
-							/*
-							std::cout << "The stack is full!\n"
-								<< "This should in theory never happend, "
-								<< "so you have discovered a bug";
-							*/
+							completed = true;
 							return;
+						}
+						else if (isLegal) {
+							//The placement is legal, and we add it to the stack
+							if(!stk.push(s)){
+								std::cout << "I SEE THE PROBLEM\n";
+							}
 						}
 					}
 				}
@@ -85,23 +60,23 @@ static void sudokuStackSolve(Stack &stk, Stack &sol) {
 
 void sudokuStackSolveMT(Stack &stk, Stack &sol) {
 	std::thread threads[NUM_THREADS];
-	int og[MAX][MAX];
-	stk.pop(og);
-	for (int i = 0; i < MAX; i++) {
-		for (int j = 0; j < MAX; j++) {
-			if (og[i][j] == 0) {
-				int s[MAX][MAX];
-				sudokuCopy(og, s);
-				for (int k = 0; k < NUM_THREADS; k++) {
-					s[i][j] = k;
-					stk.push(s);
-				}
+	std::atomic_bool completed[NUM_THREADS];
+	std::atomic_bool all_completed = false;
+	for (int i = 0; i < NUM_THREADS; i++) {
+		completed[i] = false; 
+		threads[i] = std::thread(sudokuStackSolveMT_rec, std::ref(stk), std::ref(sol), std::ref(completed[i]), std::ref(all_completed));
+	}
+	while (!all_completed) {
+		int nr_completed = 0;
+		for (int i = 0; i < NUM_THREADS; i++) {
+			if(completed[i]){
+				nr_completed++;
+			}
+			//std:: cout << "Completed" << nr_completed << "/" << "9\n";
+			if(nr_completed == NUM_THREADS){
+				all_completed = true;
 			}
 		}
-	}
-
-	for (int i = 0; i < NUM_THREADS; i++) {
-		threads[i] = std::thread(&sudokuStackSolve, std::ref(stk), std::ref(sol));
 	}
 	for (int i = 0; i < NUM_THREADS; i++) {
 		threads[i].join();
@@ -119,6 +94,7 @@ int solveSudokuBacktrackMT(int s[][MAX]) {
 	sudokuStackSolveMT(stack, solutions);
 	int nrSolutions = solutions.sizeOfStack();
 	int solvedSudoku[MAX][MAX];
+	std::cout << "There are " << nrSolutions << " Solutions\n";
 	if (nrSolutions != 0) {
 		solutions.pop(solvedSudoku);
 		sudokuCopy(solvedSudoku, s);
