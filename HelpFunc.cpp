@@ -1,7 +1,7 @@
 #include "HelpFunc.h"
 #include <iostream>
-void sudokuCreateMap(int s[][MAX]) {
-	const char topleft = 201, horizont = 196, vertical = 179, lineright = 195, lineleft = 180, hordown = 194, topright = 187, corners = 197,
+void sudokuCreateMap(Sudoku& s) {
+	const unsigned char topleft = 201, horizont = 196, vertical = 179, lineright = 195, lineleft = 180, hordown = 194, topright = 187, corners = 197,
 		botleft = 200, botright = 188, horup = 193, ddpoleleft = 185, ddvertical = 186, ddhorizont = 205, sdcorner = 216, sdcorner2 = 215,
 		ddcorner = 206, ddpoleright = 204, ddhorup = 202, ddhordown = 203, sdhordown = 209, sdhorup = 207, sdpoleright = 199, sdpoleleft = 182; // A good amount of ACII to make it look nice
 
@@ -49,14 +49,14 @@ void sudokuCreateMap(int s[][MAX]) {
 	}
 	std::cout << ddhorizont << ddhorizont << ddhorizont << botright << std::endl;
 }
-void sudokuSetToZero(int s[][MAX]) {
+void sudokuSetToZero(Sudoku& s) {
 	for (int i = 0; i < MAX; i++) {
 		for (int j = 0; j < MAX; j++) {
 			s[i][j] = 0;
 		}
 	}
 }
-bool sudokoIsLegal(int s[][MAX]) {
+bool sudokoIsLegal(Sudoku& s) {
 
 	for (int i = 0; i < MAX; i++) {
 		for (int j = 0; j < MAX; j++) {
@@ -87,7 +87,7 @@ bool sudokoIsLegal(int s[][MAX]) {
 	}
 	return true;
 }
-bool sudokuIsSame(int f[][MAX], int t[][MAX]) {
+bool sudokuIsSame(Sudoku& f, Sudoku& t) {
 	for (int i = 0; i < MAX; i++) {
 		for (int j = 0; j < MAX; j++) {
 			if (t[i][j] != f[i][j]) {
@@ -98,7 +98,7 @@ bool sudokuIsSame(int f[][MAX], int t[][MAX]) {
 	return true;
 }
 //returns whether true if there is no unplaced numers
-bool sudokuIsFinished(int s[][MAX]) {
+bool sudokuIsFinished(Sudoku& s) {
 	for (int i = 0; i < MAX; i++) {
 		for (int j = 0; j < MAX; j++) {
 			if (s[i][j] == 0) {
@@ -108,7 +108,7 @@ bool sudokuIsFinished(int s[][MAX]) {
 	}
 	return true;
 }
-void sudokuCopy(const int f[][MAX], int t[][MAX]) {
+void sudokuCopy(const Sudoku& f, Sudoku& t) {
 	for (int i = 0; i < MAX; i++) {
 		for (int j = 0; j < MAX; j++) {
 			t[i][j] = f[i][j];

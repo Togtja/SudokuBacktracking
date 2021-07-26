@@ -20,10 +20,9 @@
 //If the move in the end makes an unvalid sudoku
 //It backtracks to last valid move
 void sudokuStackSolveMT_rec(Stack &stk, Stack &sol, std::atomic_bool& completed, std::atomic_bool& all_complete) {
-	int s[MAX][MAX];
-	sudokuSetToZero(s);
+	Sudoku s;
 	while (!all_complete) {
-		while (!stk.pop(s)) {
+		while (stk.empty()) {
 			completed = true;
 			if(all_complete){
 				return;
@@ -31,6 +30,8 @@ void sudokuStackSolveMT_rec(Stack &stk, Stack &sol, std::atomic_bool& completed,
 			std::this_thread::sleep_for(std::chrono::milliseconds{100});
 
 		}
+		s = stk.top();
+		stk.pop();
 		completed = false;
 		for (int i = 0; i < MAX; i++) {
 			for (int j = 0; j < MAX; j++) {
@@ -47,9 +48,7 @@ void sudokuStackSolveMT_rec(Stack &stk, Stack &sol, std::atomic_bool& completed,
 						}
 						else if (isLegal) {
 							//The placement is legal, and we add it to the stack
-							if(!stk.push(s)){
-								std::cout << "I SEE THE PROBLEM\n";
-							}
+							stk.push(s);
 						}
 					}
 				}
@@ -83,21 +82,20 @@ void sudokuStackSolveMT(Stack &stk, Stack &sol) {
 	}
 }
 //Calls all the functions nessecery to solve the sudoku and return number of possible solutions
-int solveSudokuBacktrackMT(int s[][MAX]) {
-	Stack stack(MAX*MAX + 1); //It uses a DPS/FIFO/Stack 
+int solveSudokuBacktrackMT(Sudoku& s) {
+	Stack stack; //It uses a DPS/FIFO/Stack 
 							//so space comlexity is number of nodes and we have 9*9 nodes
 							//adds 1 just in case
 	stack.push(s);
 
-	Stack solutions(10);
+	Stack solutions;
 
 	sudokuStackSolveMT(stack, solutions);
-	int nrSolutions = solutions.sizeOfStack();
-	int solvedSudoku[MAX][MAX];
+	int nrSolutions = solutions.size();
+	Sudoku solvedSudoku;
 	std::cout << "There are " << nrSolutions << " Solutions\n";
 	if (nrSolutions != 0) {
-		solutions.pop(solvedSudoku);
-		sudokuCopy(solvedSudoku, s);
+		s = solutions.top();
 	}
 	return nrSolutions;
 }

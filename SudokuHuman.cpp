@@ -7,9 +7,9 @@ std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
 //TODO Find out why  pointingPairSimple fucks with my code
 
 //0-2 and 0-2, 3-5 and 3-5, 6-8 and 6-8
-bool solveSudokuHuman(int s[][MAX]) {
-	int copyarr[MAX][MAX];
-	int pp[MAX][MAX];
+bool solveSudokuHuman (Sudoku& s) {
+	Sudoku copyarr;
+	Sudoku pp;
 
 	bool avl[MAX][MAX][MAX] = { false }; //Fist is a 2d array of the sudoku the last is a 1d array of what numbers is possible
 	//Makses so that number already in has only 1 possible placement
@@ -153,7 +153,7 @@ static int possibleCantidates(bool a[][MAX][MAX], int i, int j) {
 }
 
 //Human Strategies
-static void pointingPairSimple(bool a[][MAX][MAX], int s[][MAX]) {
+static void pointingPairSimple(bool a[][MAX][MAX], Sudoku& s) {
 	for (int i = 0; i < MAX; i++) {
 		for (int j = 0; j < MAX; j++) {
 			
@@ -212,7 +212,7 @@ static void pointingPairSimple(bool a[][MAX][MAX], int s[][MAX]) {
 		}
 	}
 }
-static void nakedPair(bool a[][MAX][MAX], int s[][MAX]) {
+static void nakedPair(bool a[][MAX][MAX], Sudoku& s) {
 	for (int i = 0; i < MAX; i++) {
 		for (int j = 0; j < MAX; j++) {
 			if (s[i][j] != 0) { continue; }
@@ -298,7 +298,7 @@ static void nakedPair(bool a[][MAX][MAX], int s[][MAX]) {
 
 	}
 }
-static void boxReduction(bool a[][MAX][MAX], int s[][MAX]) {
+static void boxReduction(bool a[][MAX][MAX], Sudoku& s) {
 	//Find two n in a row/colom inside a 3x3
 	//colom inside 3x3
 	bool colomBox = false;
@@ -395,12 +395,12 @@ void createSudoku(int newS[][MAX]) {
 }
 */
 
-static bool oneSolution(int s[][MAX]) {
-	int temp[MAX][MAX];
+static bool oneSolution(Sudoku& s) {
+	Sudoku temp;
 	sudokuCopy(s, temp);
 	if (solveSudokuHuman(temp) && sudokuIsFinished(temp) ) {
 		return true;
 	}
-	false;
+	return false;
 }
 

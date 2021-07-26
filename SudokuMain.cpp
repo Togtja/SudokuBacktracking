@@ -7,9 +7,10 @@
 int main() {
 	//The Sudokus
 	int sudokuNr = 4;
-	int toSolve, theSudoku[MAX][MAX];
+	int toSolve;
+	Sudoku theSudoku;
 	sudokuSetToZero(theSudoku);
-	const int solveThis1[MAX][MAX]{//Just normal strategy to solve so it becomes solved
+	const Sudoku solveThis1{{//Just normal strategy to solve so it becomes solved
 	{ 0,0,5,0,0,7,0,6,0 },
 	{ 3,2,0,6,5,0,0,4,0 },
 	{ 0,0,0,0,0,2,5,0,9 },
@@ -19,8 +20,8 @@ int main() {
 	{ 9,0,1,2,0,0,0,0,0 },
 	{ 0,3,0,0,6,8,0,7,5 },
 	{ 0,5,0,4,0,0,3,0,0 }
-	};
-	const int solveThis2[MAX][MAX]{ //Needing pointing pair to be solved
+	}};
+	const Sudoku solveThis2{{ //Needing pointing pair to be solved
 	{ 0,0,0,0,6,7,4,9,0 },
 	{ 0,9,0,0,0,0,2,0,6 },
 	{ 0,0,0,5,0,0,0,8,0 },
@@ -30,8 +31,8 @@ int main() {
 	{ 0,6,0,0,0,4,0,0,0 },
 	{ 5,0,4,0,0,0,0,6,0 },
 	{ 0,8,3,1,5,0,0,0,0 }
-	};
-	const int solveThis3[MAX][MAX]{ //Unsolvable Sudoku 
+	}};
+	const Sudoku solveThis3{{ //Unsolvable Sudoku 
 	{ 1,7,3,8,0,0,9,5,0 },
 	{ 8,0,0,7,5,0,0,0,0 },
 	{ 0,0,0,0,0,0,0,4,0 },
@@ -41,8 +42,8 @@ int main() {
 	{ 0,0,7,0,0,4,0,0,5 },
 	{ 0,6,0,0,2,0,0,0,9 },
 	{ 3,5,0,0,0,0,4,6,0 }
-	};
-	const int solveThis4[MAX][MAX]{ //Alot of naked pairs
+	}};
+	const Sudoku solveThis4{{ //Alot of naked pairs
 	{ 0,8,0,0,9,0,0,3,0 },
 	{ 0,3,0,0,0,0,0,6,9 },
 	{ 9,0,2,0,6,3,1,5,8 },
@@ -52,7 +53,7 @@ int main() {
 	{ 5,6,3,0,4,0,9,8,7 },
 	{ 2,0,0,0,0,0,0,1,5 },
 	{ 0,1,0,0,5,0,0,2,0 },
-	};
+	}};
 	std::cout << "What sudoku do you want to solve? ( 1 - " << sudokuNr << " )\n";
 	std::cin >> toSolve;
 	switch (toSolve) {
