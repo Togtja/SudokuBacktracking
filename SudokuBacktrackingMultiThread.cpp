@@ -1,11 +1,15 @@
 #include "SudokuBacktrackingMultiThread.h"
 #include "HelpFunc.h"
 #include <chrono>
+#include <mutex>
 #include <ratio>
+#include <set>
 #include <string> // for memcpy
 #include <thread> //for threads'
 #include <iostream>
-#define NUM_THREADS 12 //for now only 9 threads supported
+
+const  int NUM_THREADS = std::thread::hardware_concurrency();
+std::mutex stack_lock;
 /*
 	Tomas Himberg Berger
 	Solves sudokus with us of backtracking
@@ -22,33 +26,38 @@
 void sudokuStackSolveMT_rec(Stack &stk, Stack &sol, std::atomic_bool& completed, std::atomic_bool& all_complete) {
 	Sudoku s;
 	while (!all_complete) {
+		
+		stack_lock.lock();
 		while (stk.empty()) {
 			completed = true;
+			stack_lock.unlock();
 			if(all_complete){
 				return;
 			}
 			std::this_thread::sleep_for(std::chrono::milliseconds{100});
-
+			stack_lock.lock();
 		}
 		s = stk.top();
 		stk.pop();
 		completed = false;
+		stack_lock.unlock();
+		
 		for (int i = 0; i < MAX; i++) {
 			for (int j = 0; j < MAX; j++) {
 				if (s[i][j] == 0) { //First non-placed place
 					for (int k = 1; k < MAX + 1; k++) {
 						s[i][j] = k;
-						bool isLegal = sudokoIsLegal(s);
-						if (isLegal && sudokuIsFinished(s)) {
-							//The sudoku is comple and we print it out
-							std::cout << "We done solved it";
-							sol.push(s);
-							completed = true;
-							return;
-						}
-						else if (isLegal) {
-							//The placement is legal, and we add it to the stack
-							stk.push(s);
+						if(sudokoIsLegal(s)){
+							{
+								std::lock_guard<std::mutex> guard(stack_lock);
+								stk.push(s);
+							}
+							if(sudokuIsFinished(s)){
+								{
+									std::lock_guard<std::mutex> guard(stack_lock);	
+									sol.push(s);
+								}
+							}
 						}
 					}
 				}
@@ -83,19 +92,23 @@ void sudokuStackSolveMT(Stack &stk, Stack &sol) {
 }
 //Calls all the functions nessecery to solve the sudoku and return number of possible solutions
 int solveSudokuBacktrackMT(Sudoku& s) {
-	Stack stack; //It uses a DPS/FIFO/Stack 
-							//so space comlexity is number of nodes and we have 9*9 nodes
-							//adds 1 just in case
+	Stack stack; 
 	stack.push(s);
 
 	Stack solutions;
 
 	sudokuStackSolveMT(stack, solutions);
-	int nrSolutions = solutions.size();
+	std::cout << "We got " << solutions.size() << " Solutions (Not garanteed unique)\n";
+	std::set<Sudoku> unique_sol;
+	while (!solutions.empty()) {
+		unique_sol.emplace(solutions.top());
+		solutions.pop();
+	}
+	int nrSolutions = unique_sol.size();
 	Sudoku solvedSudoku;
-	std::cout << "There are " << nrSolutions << " Solutions\n";
+	std::cout << "There are/is " << nrSolutions << " Unique Solutions\n";
 	if (nrSolutions != 0) {
-		s = solutions.top();
+		s = *unique_sol.begin();
 	}
 	return nrSolutions;
 }

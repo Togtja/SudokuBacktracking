@@ -60,7 +60,7 @@ bool sudokoIsLegal(Sudoku& s) {
 
 	for (int i = 0; i < MAX; i++) {
 		for (int j = 0; j < MAX; j++) {
-			//Checks that there is no more than accurence of a number in the i/(y) coloums
+			//Checks that there is no more than 1 occurrence of a number in the i/(y) columns
 			for (int k = 0; k < MAX; k++) {
 				if (j != k && s[i][j] != 0 && s[i][k] != 0) {
 					if (s[i][j] == s[i][k]) {
@@ -68,7 +68,7 @@ bool sudokoIsLegal(Sudoku& s) {
 					}
 				}
 			}
-			//Checks that there is no more than accurence of a number in the j/(x) rows
+			//Checks that there is no more than 1 occurrence of a number in the j/(x) rows
 			for (int k = 0; k < MAX; k++) {
 				if (i != k && s[i][j] != 0 && s[k][j] != 0) {
 					if (s[i][j] == s[k][j]) {
