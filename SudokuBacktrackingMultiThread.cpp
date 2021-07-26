@@ -16,7 +16,7 @@
 //Recursivly goes into the sudoko for each valid move
 //If the move in the end makes an unvalid sudoku
 //It backtracks to last valid move
-static void sudokuStackSolve(Stack &stk, Stack &sol) {
+void sudokuStackSolve_rec(Stack &stk, Stack &sol) {
 	int s[MAX][MAX];
 	sudokuSetToZero(s);
 	if (!stk.pop(s)) {
@@ -65,7 +65,7 @@ static void sudokuStackSolve(Stack &stk, Stack &sol) {
 						//The placement is legal, and we add it to the stack
 						if (stk.push(s)) {
 							//reurise with the first found correct one
-							sudokuStackSolve(stk, sol);
+							sudokuStackSolve_rec(stk, sol);
 						}
 						else {
 							///DEBUG
@@ -101,7 +101,7 @@ void sudokuStackSolveMT(Stack &stk, Stack &sol) {
 	}
 
 	for (int i = 0; i < NUM_THREADS; i++) {
-		threads[i] = std::thread(&sudokuStackSolve, std::ref(stk), std::ref(sol));
+		threads[i] = std::thread(&sudokuStackSolve_rec, std::ref(stk), std::ref(sol));
 	}
 	for (int i = 0; i < NUM_THREADS; i++) {
 		threads[i].join();
